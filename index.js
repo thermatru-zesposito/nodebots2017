@@ -63,7 +63,7 @@ function letsPlay() {
     var speed = 255;
     var wheels = {
         leftWheel: new five.Motor({ pins: [5, 12], invertPWM: false }),
-        rightWheel: new five.Motor({ pins: [4, 12], invertPWM: false }),
+        rightWheel: new five.Motor({ pins: [4, 14], invertPWM: false }),
 
         stop: function () {
             stop();
@@ -211,7 +211,7 @@ function letsPlay() {
         'up': forward,
         'left': left,
         'right': right,
-        'back': back,
+        'down': back,
         'space': stop,
         'q': exit
     };
