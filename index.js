@@ -144,7 +144,7 @@ function letsPlay() {
                 newcommand = "" + currentaction + "(" + a + ")";
                 distance = 0;
                 break;
-            case 'home':
+            case 'H':
                 newcommand = "H()";
                 distance = 0;
                 break;
