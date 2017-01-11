@@ -24,6 +24,15 @@ var connectionString = 'HostName=huzzahbots.azure-devices.net;DeviceId=' + devic
 var client = Client.fromConnectionString(connectionString, Protocol);
 var currentaction = "offline";
 
+var configs = {
+    Motors = {
+        Left = { pins: [5, 12], invertPWM: false },
+        Right = { pins: [4, 14], invertPWM: false }
+    },
+    Scalar = 256,
+    Speed = 255
+};
+
 board.on('ready', function () {
     letsPlay();
     var connectCallback = function (err) {
@@ -57,13 +66,11 @@ function printResultFor(op) {
 }
 
 function letsPlay() {
-    var scalar = 256; // Friction coefficient
     var actioncounter = 0;
     var newcommand = "H()";
-    var speed = 255;
     var wheels = {
-        leftWheel: new five.Motor({ pins: [5, 12], invertPWM: false }),
-        rightWheel: new five.Motor({ pins: [4, 14], invertPWM: false }),
+        leftWheel: new five.Motor(configs.Motors.Left),
+        rightWheel: new five.Motor(configs.Motors.Right),
 
         stop: function () {
             stop();
@@ -134,15 +141,15 @@ function letsPlay() {
         switch (currentaction) {
             case 'F':
             case 'B':
-                var a = (now - actioncounter) * 0.18 * speed / scalar;
+                var a = (now - actioncounter) * 0.18 * configs.Speed / configs.Scalar;
                 newcommand = "" + currentaction + "(" + a + ")";
                 distance = a;
                 break;
             case 'R':
             case 'L':
-                var a = (now - actioncounter) * 0.18 * speed / scalar;
+                var a = (now - actioncounter) * 0.18 * configs.Speed / configs.Scalar;
                 newcommand = "" + currentaction + "(" + a + ")";
-                distance = 0;
+                distance = a;
                 break;
             case 'H':
                 newcommand = "H()";
@@ -162,9 +169,7 @@ function letsPlay() {
     }
 
 ////////////////////////////////////////////////////////////////
-
-    function SetInitialTrim() {
-    }
+    
 // Write your Johnny-Five code here!
     
 
