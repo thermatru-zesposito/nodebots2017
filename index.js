@@ -211,7 +211,7 @@ function letsPlay() {
         'up': forward,
         'left': left,
         'right': right,
-        'back': reverse,
+        'down': reverse,
         'space': stop,
         'q': exit
     };
