@@ -13,13 +13,17 @@ var five = require("johnny-five");
 var Protocol = require('azure-iot-device-amqp').Amqp;
 var Client = require('azure-iot-device').Client;
 var Message = require('azure-iot-device').Message;
+var keypress = require('keypress');
 
 // Setup - Don't modify
 var board = new five.Board({
-    io: new Firmata(new EtherPortClient({ host: deviceHost, port: 3030 })), timeout: 30000 });
+    io: new Firmata(new EtherPortClient({ host: deviceHost, port: 3030 })),
+    timeout: 30000
+});
 var connectionString = 'HostName=huzzahbots.azure-devices.net;DeviceId=' + deviceID + ';SharedAccessKey=' + deviceKey + '';
 var client = Client.fromConnectionString(connectionString, Protocol);
 var currentaction = "offline";
+
 board.on('ready', function () {
     letsPlay();
     var connectCallback = function (err) {
@@ -44,43 +48,111 @@ board.on('ready', function () {
     };
     client.open(connectCallback);
 });
-    function printResultFor(op) {
-        return function printResult(err, res) {
-            if (err) console.log(op + ' error: ' + err.toString());
-            if (res) console.log(op + ' status: ' + res.constructor.name);
-        };
-    }
-function letsPlay(){
-    var rightWheel = new five.Motor({ pins: [4, 12], invertPWM: false });
-    var leftWheel = new five.Motor({ pins: [5, 14], invertPWM: false });
+
+function printResultFor(op) {
+    return function printResult(err, res) {
+        if (err) console.log(op + ' error: ' + err.toString());
+        if (res) console.log(op + ' status: ' + res.constructor.name);
+    };
+}
+
+function letsPlay() {
     var scalar = 256; // Friction coefficient
     var actioncounter = 0;
-    var newcommand = "home()";
+    var newcommand = "H()";
     var speed = 255;
-    leftWheel.rev(0);
-    rightWheel.rev(0); 
+    var wheels = {
+        leftWheel: new five.Motor({ pins: [5, 12], invertPWM: false }),
+        rightWheel: new five.Motor({ pins: [4, 12], invertPWM: false }),
 
-    function actionSender(){
+        stop: function () {
+            stop();
+        },
+        forward: function () {
+            forward();
+        },
+        left: function () {
+            left();
+        },
+        right: function () {
+            right();
+        },
+        back: function () {
+            left();
+        },
+        off: function () {
+            currentaction = "X";
+            setTimeout(process.exit, 1000);
+        }
+    };
+
+    wheels.stop();
+
+    console.log("Keys: cursor keys or ASWD for movement. Escape or Spacebar to stop.");
+
+    //stdin.on("keypress", function (chunk, key) {
+    //    if (!key) return;
+
+    //    switch (key.name) {
+    //        case 'up':
+    //        case 'w':
+    //            wheels.forward();
+    //            break;
+
+    //        case 'down':
+    //        case 's':
+    //            wheels.back();
+    //            break;
+
+    //        case 'left':
+    //        case 'a':
+    //            wheels.left();
+    //            break;
+
+    //        case 'right':
+    //        case 'd':
+    //            wheels.right();
+    //            break;
+
+    //        case 'space':
+    //        case 'escape':
+    //            wheels.stop();
+    //            break;
+
+    //        case 'q':
+    //            wheels.off();
+    //            break;
+
+    //        default: break;
+    //    }
+    //});
+
+    function actionSender() {
         var distance = 0;
         Math.round(actioncounter);
-        if (currentaction == "fd" || currentaction == "bk") {
-            var a = (moment.now() - actioncounter) * 0.18 * speed / scalar;
-            newcommand = "" + currentaction +"(" + a + ")";
-            distance = a;
+        var now = moment.now();
+        switch (currentaction) {
+            case 'F':
+            case 'B':
+                var a = (now - actioncounter) * 0.18 * speed / scalar;
+                newcommand = "" + currentaction + "(" + a + ")";
+                distance = a;
+                break;
+            case 'R':
+            case 'L':
+                var a = (now - actioncounter) * 0.18 * speed / scalar;
+                newcommand = "" + currentaction + "(" + a + ")";
+                distance = 0;
+                break;
+            case 'home':
+                newcommand = "H()";
+                distance = 0;
+                break;
+            default:
+                newcommand = "F(0)";
+                distance = 0;
+                break;
         }
-        else if (currentaction == "rt" || currentaction == "lt") {
-            var a = (moment.now() - actioncounter) * 0.18 * speed / scalar;
-            newcommand = "" + currentaction +"(" + a + ")";
-            distance = 0;
-        }
-        else if (currentaction == "home") {
-            newcommand = "home()";
-            distance = 0;
-        }
-        else { 
-            newcommand = "fd(0)"; 
-            distance = 0;
-        };
         distance = distance.toString();
         var data = JSON.stringify({ deviceId: deviceID, command: newcommand, distance: distance });
         var message = new Message(data);
@@ -91,38 +163,40 @@ function letsPlay(){
 
 ////////////////////////////////////////////////////////////////
 
+    function SetInitialTrim() {
+    }
 // Write your Johnny-Five code here!
     
 
 ///////////////////////////////////////////////////////////////
 
-// These functions are for stopping and moving the car with a little workaround specific to the Feather HUZZAH board and Johnny-Five. Leave these as they are.
+    // These functions are for stopping and moving the car with a little workaround specific to the Feather HUZZAH board and Johnny-Five. Leave these as they are.
     function forward() {
         leftWheel.fwd(0);
         rightWheel.fwd(0);
-        currentaction = "fd";
+        currentaction = "F";
         console.log("Forward!");
     }
     function stop() {
         leftWheel.rev(0); // This makes the car stop.
-        rightWheel.rev(0); 
-        currentaction = "stopped";
+        rightWheel.rev(0);
+        currentaction = "S";
         console.log("Stop!");
     }
     function left() {
         leftWheel.rev(0);
         rightWheel.fwd(0);
-        currentaction = "lt";
+        currentaction = "L";
         console.log("Left!");
     }
     function right() {
         leftWheel.fwd(0);
         rightWheel.rev(0);
-        currentaction = "rt";
+        currentaction = "R";
         console.log("Right!");
     }
     function exit() {
-        currentaction = "offline";
+        currentaction = "X";
         setTimeout(process.exit, 1000);
     }
 
