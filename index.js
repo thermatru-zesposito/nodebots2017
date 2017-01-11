@@ -218,9 +218,13 @@ function letsPlay() {
         console.log("Right!");
     }
     function fire() {
-        servos.Cannon.fire()
+        servos.Cannon.sweep();
         currentaction = "FIRE";
         console.log("FIRE!");
+        this.wait(5000, function () {
+            servos.Cannon.stop();
+            servos.Cannon.center();
+        }); 
     }
     function exit() {
         currentaction = "X";
