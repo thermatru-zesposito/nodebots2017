@@ -63,7 +63,7 @@ function letsPlay() {
     var speed = 255;
     var wheels = {
         leftWheel: new five.Motor({ pins: [5, 12], invertPWM: false }),
-        rightWheel: new five.Motor({ pins: [4, 12], invertPWM: false }),
+        rightWheel: new five.Motor({ pins: [4, 14], invertPWM: false }),
 
         stop: function () {
             stop();
@@ -77,8 +77,8 @@ function letsPlay() {
         right: function () {
             right();
         },
-        back: function () {
-            back();
+        reverse: function () {
+            reverse();
         },
         off: function () {
             currentaction = "X";
@@ -177,11 +177,11 @@ function letsPlay() {
         currentaction = "F";
         console.log("Forward!");
     }
-    function back() {
+    function reverse() {
         wheels.leftWheel.rev(1);
         wheels.rightWheel.rev(1);
         currentaction = "B";
-        console.log("Back!");
+        console.log("Reverse!");
     }
     function stop() {
         wheels.leftWheel.rev(0); // This makes the car stop.
@@ -211,7 +211,7 @@ function letsPlay() {
         'up': forward,
         'left': left,
         'right': right,
-        'back': back,
+        'back': reverse,
         'space': stop,
         'q': exit
     };
