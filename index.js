@@ -78,7 +78,7 @@ function letsPlay() {
             right();
         },
         back: function () {
-            left();
+            back();
         },
         off: function () {
             currentaction = "X";
@@ -177,6 +177,12 @@ function letsPlay() {
         currentaction = "F";
         console.log("Forward!");
     }
+    function back() {
+        wheels.leftWheel.rev(1);
+        wheels.rightWheel.rev(1);
+        currentaction = "B";
+        console.log("Back!");
+    }
     function stop() {
         wheels.leftWheel.rev(0); // This makes the car stop.
         wheels.rightWheel.rev(0);
@@ -205,6 +211,7 @@ function letsPlay() {
         'up': forward,
         'left': left,
         'right': right,
+        'back': back,
         'space': stop,
         'q': exit
     };
