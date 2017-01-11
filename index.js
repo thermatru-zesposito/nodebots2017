@@ -29,6 +29,11 @@ var configs = {
         Left = { pins: [5, 12], invertPWM: false },
         Right = { pins: [4, 14], invertPWM: false }
     },
+    Servos = {
+        Cannon = {
+            Pin = 9
+        }
+    },
     Scalar = 256,
     Speed = 255
 };
@@ -91,6 +96,9 @@ function letsPlay() {
             currentaction = "X";
             setTimeout(process.exit, 1000);
         }
+    };
+    var servos = {
+        Cannon = new five.Servo(configs.Servos.Cannon.Pin)
     };
 
     wheels.stop();
@@ -155,6 +163,9 @@ function letsPlay() {
                 newcommand = "H()";
                 distance = 0;
                 break;
+            case 'FIRE':
+
+                break;
             default:
                 newcommand = "F(0)";
                 distance = 0;
@@ -206,6 +217,11 @@ function letsPlay() {
         currentaction = "R";
         console.log("Right!");
     }
+    function fire() {
+        servos.Cannon.fire()
+        currentaction = "FIRE";
+        console.log("FIRE!");
+    }
     function exit() {
         currentaction = "X";
         setTimeout(process.exit, 1000);
@@ -218,6 +234,7 @@ function letsPlay() {
         'right': right,
         'down': reverse,
         'space': stop,
+        'enter': fire,
         'q': exit
     };
 
