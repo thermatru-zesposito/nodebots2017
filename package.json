@@ -18,7 +18,6 @@
     "etherport-client": "^0.1.0",
     "firmata": "0.14.1",
     "johnny-five": "^0.9.32",
-    "keypress": "^0.2.1",
     "moment": "^2.17.1"
   },
   "author": "rachel weil",
