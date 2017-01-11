@@ -62,8 +62,12 @@ function letsPlay() {
     var newcommand = "H()";
     var speed = 255;
     var wheels = {
-        leftWheel: new five.Motor({ pins: [5, 12], invertPWM: false }),
-        rightWheel: new five.Motor({ pins: [4, 14], invertPWM: false }),
+        leftWheel: new five.Motor({ pins: [4, 12], invertPWM: false }),
+        rightWheel: new five.Motor({ pins: [5, 14], invertPWM: false }),
+         leftwheelpin1a: new five.Pin(4),
+         leftwheelpin1b: new five.Pin(12),
+         rightwheelpin1a: new five.Pin(5),
+         rightwheelpin1b: new five.Pin(14),
 
         stop: function () {
             stop();
@@ -178,8 +182,12 @@ function letsPlay() {
         console.log("Forward!");
     }
     function reverse() {
-        wheels.leftWheel.rev(1);
-        wheels.rightWheel.rev(1);
+        // wheels.leftWheel.fwd(0);
+        // wheels.rightWheel.fwd(0);
+        wheels.leftwheelpin1a.high();
+        wheels.rightwheelpin1a.high();
+        wheels.leftwheelpin1b.low();
+        wheels.rightwheelpin1b.low();
         currentaction = "B";
         console.log("Reverse!");
     }
@@ -188,6 +196,10 @@ function letsPlay() {
         wheels.rightWheel.rev(0);
         currentaction = "S";
         console.log("Stop!");
+        wheels.leftwheelpin1a.low();
+        wheels.rightwheelpin1a.low();
+        wheels.leftwheelpin1b.low();
+        wheels.rightwheelpin1b.low();
     }
     function left() {
         wheels.leftWheel.rev(0);
